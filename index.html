@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#f4f5f8" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#14161b" media="(prefers-color-scheme: dark)" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="description" content="Convert images into round images of one size, with an adjustable inner circle, and print them on PDF sheets." />
+    <title>Round Image Maker</title>
+  </head>
+  <body>
+    <header class="app-header">
+      <h1>Round Image Maker</h1>
+      <p>Turn JPEG, PNG, WebP, GIF, BMP, SVG or AVIF images into round images of one size and print them on PDF sheets. Everything runs in your browser, so nothing is uploaded to a server.</p>
+    </header>
+
+    <main class="layout">
+      <section class="panel controls" aria-label="Settings">
+        <fieldset id="pages-fieldset">
+          <legend>Pages <span id="pages-count" class="legend-note"></span></legend>
+          <div id="page-list" class="page-list" role="listbox" aria-label="Project pages"></div>
+          <label id="dropzone" class="dropzone" for="file-input" tabindex="0">
+            <input id="file-input" type="file" multiple accept="image/*,.jpg,.jpeg,.png,.webp,.gif,.bmp,.svg,.avif,.ico" hidden />
+            <span class="dz-title only-mouse">+ Add images</span>
+            <span class="dz-sub only-mouse">drop them here, click to browse, or paste (Ctrl+V). Each image becomes a page.</span>
+            <span class="dz-title only-touch">+ Add photos</span>
+            <span class="dz-sub only-touch">from your gallery, files, or camera. Each photo becomes a page.</span>
+            <span id="pages-status" class="dz-info" aria-live="polite"></span>
+          </label>
+          <p id="error" class="error" role="alert" hidden></p>
+        </fieldset>
+
+        <h2 class="section-title">Current page</h2>
+        <p id="page-info" class="page-info">Add images to start.</p>
+
+        <fieldset id="position-fieldset" disabled>
+          <legend>Image position</legend>
+          <div class="row">
+            <label for="zoom">Zoom</label>
+            <input id="zoom" type="range" min="-4.32" max="4.32" step="0.01" value="0" aria-label="Zoom (logarithmic)" />
+            <span class="num"><input id="zoom-num" type="number" min="0.05" max="20" step="0.01" value="1" aria-label="Zoom factor" /> ×</span>
+          </div>
+          <div class="presets" role="group" aria-label="Zoom presets">
+            <button id="zoom-fill" type="button" title="Image covers the whole circle (cropped if needed)">Fill circle</button>
+            <button id="zoom-fit" type="button" title="Whole image fits inside the circle">Fit inside</button>
+            <button id="zoom-actual" type="button" title="One image pixel = one output pixel">Actual size</button>
+            <button id="center-pos" type="button" title="Center the image">Center</button>
+          </div>
+          <label class="check" title="Preview only: show the whole image, with the parts outside the circle faded and its outer edge outlined">
+            <input id="show-bounds" type="checkbox" checked /> Show image bounds in preview
+          </label>
+          <p class="hint">Zoom below 1× to make the image smaller than the circle. <span class="only-mouse">Drag the preview to move the image; any part of it can be centered. Scroll to zoom. Arrow keys also move it.</span><span class="only-touch">Drag the preview with one finger to move the image; pinch with two fingers to zoom.</span></p>
+        </fieldset>
+
+        <fieldset id="background-fieldset" disabled>
+          <legend>Background</legend>
+          <div class="bg-options" role="radiogroup" aria-label="Background">
+            <label class="check"><input type="radio" name="bg" value="transparent" checked /> Transparent</label>
+            <label class="check"><input type="radio" name="bg" value="color" /> Color</label>
+            <input id="bg-color" class="inactive" type="color" value="#ffffff" aria-label="Background color" />
+          </div>
+          <p class="hint">Fills the circle where the image doesn't cover it, including transparent areas of the image.</p>
+        </fieldset>
+
+        <div class="actions">
+          <button id="download" type="button" class="primary" disabled>Download page image</button>
+          <button id="share" type="button" class="primary" disabled hidden title="Save to Photos or send to another app">Share / Save</button>
+        </div>
+
+        <h2 class="section-title">Project settings <span class="legend-note">(all pages)</span></h2>
+
+        <fieldset>
+          <legend>Output</legend>
+          <div class="row">
+            <label for="size-num">Diameter</label>
+            <input id="size-range" type="range" min="16" max="2048" step="1" value="512" aria-label="Diameter slider" />
+            <span class="num"><input id="size-num" type="number" min="16" max="8192" step="1" value="512" /> px</span>
+          </div>
+          <div class="presets" role="group" aria-label="Size presets">
+            <button type="button" data-size="64">64</button>
+            <button type="button" data-size="128">128</button>
+            <button type="button" data-size="256">256</button>
+            <button type="button" data-size="512">512</button>
+            <button type="button" data-size="1024">1024</button>
+            <button type="button" data-size="original" title="Use the shorter side of the current page's image">Original</button>
+          </div>
+          <div class="row">
+            <label for="format">Format</label>
+            <select id="format">
+              <option value="image/png">PNG (transparent)</option>
+              <option value="image/webp">WebP (transparent)</option>
+            </select>
+            <span></span>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>
+            <label class="check"><input id="inner-visible" type="checkbox" checked /> Inner circle</label>
+          </legend>
+          <div id="inner-controls">
+            <div class="row">
+              <label for="inner-num">Diameter</label>
+              <input id="inner-range" type="range" min="1" max="512" step="1" value="256" aria-label="Inner diameter slider" />
+              <span class="num"><input id="inner-num" type="number" min="1" max="512" step="1" value="256" /> px</span>
+            </div>
+            <div class="row">
+              <label for="inner-pct">Relative</label>
+              <input id="inner-pct-range" type="range" min="1" max="100" step="0.5" value="50" aria-label="Inner diameter percent slider" />
+              <span class="num"><input id="inner-pct" type="number" min="1" max="100" step="0.5" value="50" /> %</span>
+            </div>
+            <div class="row">
+              <label for="inner-color">Color</label>
+              <input id="inner-color" type="color" value="#ffffff" />
+              <span></span>
+            </div>
+            <div class="row">
+              <label for="inner-width">Line width</label>
+              <input id="inner-width-range" type="range" min="0" max="64" step="1" value="4" aria-label="Line width slider" />
+              <span class="num"><input id="inner-width" type="number" min="0" max="512" step="1" value="4" /> px</span>
+            </div>
+            <div class="row">
+              <label for="inner-style">Line style</label>
+              <select id="inner-style">
+                <option value="solid">Solid</option>
+                <option value="dashed">Dashed</option>
+                <option value="long-dash">Long dash</option>
+                <option value="dotted">Dotted</option>
+                <option value="dash-dot">Dash-dot</option>
+              </select>
+              <span></span>
+            </div>
+            <div class="row">
+              <label for="inner-fill">Fill opacity</label>
+              <input id="inner-fill" type="range" min="0" max="100" step="1" value="0" />
+              <span class="num"><output id="inner-fill-out" for="inner-fill">0%</output></span>
+            </div>
+            <label class="check"><input id="inner-export" type="checkbox" checked /> Include inner circle in downloaded images and PDF</label>
+          </div>
+        </fieldset>
+
+        <fieldset id="sheet-fieldset">
+          <legend>Print sheet (PDF)</legend>
+          <p class="hint">Set how many copies of each page to print with the <b>×</b> box on its thumbnail. The copies are arranged in page order and fill each sheet row by row.</p>
+          <div class="row">
+            <label for="sheet-all-count">All pages</label>
+            <span class="num"><input id="sheet-all-count" type="number" min="0" max="1000" step="1" value="1" aria-label="Copies for every page" /> ×</span>
+            <button id="sheet-all-apply" type="button" class="secondary">Apply to all</button>
+          </div>
+          <div class="row">
+            <label for="sheet-diameter">Image size</label>
+            <span></span>
+            <span class="num"><input id="sheet-diameter" type="number" min="1" max="1000" step="0.5" value="45" /> mm</span>
+          </div>
+          <div class="row">
+            <label for="sheet-page">Sheet size</label>
+            <select id="sheet-page">
+              <option value="A3">A3 (297 × 420 mm)</option>
+              <option value="A4" selected>A4 (210 × 297 mm)</option>
+              <option value="A5">A5 (148 × 210 mm)</option>
+              <option value="Letter">Letter (8.5 × 11 in)</option>
+              <option value="Legal">Legal (8.5 × 14 in)</option>
+              <option value="custom">Custom…</option>
+            </select>
+            <span></span>
+          </div>
+          <div id="sheet-custom" class="row" hidden>
+            <label for="sheet-width">Custom</label>
+            <span class="num"><input id="sheet-width" type="number" min="10" max="2000" step="0.5" value="210" aria-label="Sheet width" /> ×</span>
+            <span class="num"><input id="sheet-height" type="number" min="10" max="2000" step="0.5" value="297" aria-label="Sheet height" /> mm</span>
+          </div>
+          <div class="row">
+            <label for="sheet-orientation">Orientation</label>
+            <select id="sheet-orientation">
+              <option value="portrait">Portrait</option>
+              <option value="landscape">Landscape</option>
+            </select>
+            <span></span>
+          </div>
+          <div class="row">
+            <label for="sheet-margin">Margin</label>
+            <span></span>
+            <span class="num"><input id="sheet-margin" type="number" min="0" max="200" step="0.5" value="10" /> mm</span>
+          </div>
+          <div class="row">
+            <label for="sheet-gap">Spacing</label>
+            <span></span>
+            <span class="num"><input id="sheet-gap" type="number" min="0" max="200" step="0.5" value="5" /> mm</span>
+          </div>
+          <div class="row">
+            <label for="sheet-dpi">Resolution</label>
+            <select id="sheet-dpi">
+              <option value="150">150 DPI (draft)</option>
+              <option value="300" selected>300 DPI (print)</option>
+              <option value="600">600 DPI (high quality)</option>
+            </select>
+            <span></span>
+          </div>
+          <label class="check"><input id="sheet-center" type="checkbox" checked /> Center images on the sheet</label>
+          <label class="check"><input id="sheet-cutlines" type="checkbox" /> Add thin cut lines around each image</label>
+          <p id="sheet-summary" class="sheet-summary" aria-live="polite"></p>
+          <canvas id="sheet-preview" class="sheet-preview" aria-label="Print sheet preview (first sheet)"></canvas>
+          <div class="actions">
+            <button id="download-pdf" type="button" class="primary" disabled>Download PDF</button>
+            <button id="share-pdf" type="button" class="primary" disabled hidden title="Send the PDF to a printer app, Files, mail…">Share PDF</button>
+          </div>
+          <p class="hint">Print at 100% / "Actual size" (not "Fit to page") to keep the exact mm sizes.</p>
+        </fieldset>
+      </section>
+
+      <section class="panel preview" aria-label="Preview">
+        <div id="stage" class="stage">
+          <canvas id="preview" tabindex="0" aria-label="Round image preview of the current page"></canvas>
+          <div id="placeholder" class="placeholder">Add images to create pages. The current page's round image appears here.</div>
+        </div>
+        <p id="preview-info" class="preview-info"></p>
+      </section>
+    </main>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
