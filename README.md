@@ -21,7 +21,7 @@ Everything runs in your browser using the Canvas API, so your images never leave
 - Zoom below 1× makes the image smaller than the circle. Presets: **Fill circle** (1×), **Fit inside** (the whole image fits in the circle), **Actual size** (1 image px = 1 output px), and **Center**.
 - **Show image bounds in preview** (on by default): the preview also shows the parts of the image cropped away by the circle (faded), with a dashed outline of the whole image's outer edge and a thin outline of the output circle. This only affects the preview.
 - Background per page: **Transparent** or any **Color**. It fills the circle wherever the image doesn't cover it, including transparent parts of the image. The area outside the circle is always transparent.
-- Inner circle (project-wide): diameter in px or %, color, line width, line style (solid, dashed, long dash, dotted, dash-dot), and fill opacity. You can choose whether it is included in downloads and the PDF.
+- Inner circle (project-wide): diameter in px or %, color, line width, line style (solid, dashed, long dash, dotted, dash-dot), and fill opacity. You can choose whether it is included in downloads and the PDF (off by default, so it works as a preview-only guide). Defaults: 71% of the diameter, red, dashed.
 - Downloads are PNG or WebP with transparent corners.
 - EXIF orientation of photos is applied automatically.
 - **Print sheet (PDF):**

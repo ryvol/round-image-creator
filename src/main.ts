@@ -120,13 +120,13 @@ interface Page {
 /** Settings shared by every page. */
 const project = {
   size: 512,
-  innerRatio: 0.5,
+  innerRatio: 0.71,
   innerVisible: true,
-  innerColor: '#ffffff',
+  innerColor: '#ff0000',
   innerLineWidth: 4,
-  innerLineStyle: 'solid' as LineStyle,
+  innerLineStyle: 'dashed' as LineStyle,
   innerFill: 0,
-  innerExport: true,
+  innerExport: false,
   showBounds: true,
 };
 

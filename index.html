@@ -103,17 +103,17 @@
           <div id="inner-controls">
             <div class="row">
               <label for="inner-num">Diameter</label>
-              <input id="inner-range" type="range" min="1" max="512" step="1" value="256" aria-label="Inner diameter slider" />
-              <span class="num"><input id="inner-num" type="number" min="1" max="512" step="1" value="256" /> px</span>
+              <input id="inner-range" type="range" min="1" max="512" step="1" value="364" aria-label="Inner diameter slider" />
+              <span class="num"><input id="inner-num" type="number" min="1" max="512" step="1" value="364" /> px</span>
             </div>
             <div class="row">
               <label for="inner-pct">Relative</label>
-              <input id="inner-pct-range" type="range" min="1" max="100" step="0.5" value="50" aria-label="Inner diameter percent slider" />
-              <span class="num"><input id="inner-pct" type="number" min="1" max="100" step="0.5" value="50" /> %</span>
+              <input id="inner-pct-range" type="range" min="1" max="100" step="0.5" value="71" aria-label="Inner diameter percent slider" />
+              <span class="num"><input id="inner-pct" type="number" min="1" max="100" step="0.5" value="71" /> %</span>
             </div>
             <div class="row">
               <label for="inner-color">Color</label>
-              <input id="inner-color" type="color" value="#ffffff" />
+              <input id="inner-color" type="color" value="#ff0000" />
               <span></span>
             </div>
             <div class="row">
@@ -125,7 +125,7 @@
               <label for="inner-style">Line style</label>
               <select id="inner-style">
                 <option value="solid">Solid</option>
-                <option value="dashed">Dashed</option>
+                <option value="dashed" selected>Dashed</option>
                 <option value="long-dash">Long dash</option>
                 <option value="dotted">Dotted</option>
                 <option value="dash-dot">Dash-dot</option>
@@ -137,7 +137,7 @@
               <input id="inner-fill" type="range" min="0" max="100" step="1" value="0" />
               <span class="num"><output id="inner-fill-out" for="inner-fill">0%</output></span>
             </div>
-            <label class="check"><input id="inner-export" type="checkbox" checked /> Include inner circle in downloaded images and PDF</label>
+            <label class="check"><input id="inner-export" type="checkbox" /> Include inner circle in downloaded images and PDF</label>
           </div>
         </fieldset>
 
