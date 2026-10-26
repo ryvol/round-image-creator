@@ -123,7 +123,7 @@ const project = {
   innerRatio: 0.71,
   innerVisible: true,
   innerColor: '#ff0000',
-  innerLineWidth: 4,
+  innerLineWidth: 1,
   innerLineStyle: 'dashed' as LineStyle,
   innerFill: 0,
   innerExport: false,
